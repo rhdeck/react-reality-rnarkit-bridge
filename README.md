@@ -8,10 +8,11 @@ Bindings to support the [react-native-arkit](https://github.com/react-native-ar/
 
 # Installation
 
-Shortest path to POC at this time:
+Shortest path to POC at this time (where you can replace bridgetest with your preferred test app name):
 
 ```bash
 react-native init bridgetest
+cd bridgetest
 yarn add \
     rhdeck/react-reality \
     rhdeck/react-reality-rnarkit-bridge \
