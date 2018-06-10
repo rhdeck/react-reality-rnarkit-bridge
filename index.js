@@ -215,4 +215,3 @@ export {
   colorUtils,
   ARKit
 };
-console.log("ARKit is", ARKit, ARKit.Box);
