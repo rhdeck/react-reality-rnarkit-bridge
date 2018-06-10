@@ -1,20 +1,32 @@
 import * as RR from "react-reality";
-
 const ARKit = {};
-
 makeARGeom = (RRComponent, filterProps) => props => {
-  const shapeProps = filterProps(props);
+  const shapeProps = filterProps && filterProps(props);
   return (
     <RR.ARNode {...props}>
       <RRComponent {...props} {...shapeProps}>
-        <RR.ARMaterials>
-          <ARMaterialProperty />
-        </RR.ARMaterials>
+        {props.materials &&
+          props.materials.map((obj, index) => {
+            return (
+              <RR.ARMaterial {...obj} index={index}>
+                {["diffuse", "displacement", "specular", "normal"].map(id => {
+                  if (obj[id]) {
+                    return (
+                      <RR.ARMaterialProperty
+                        color={obj.color}
+                        {...obj[id]}
+                        id={id}
+                      />
+                    );
+                  }
+                })}
+              </RR.ARMaterial>
+            );
+          })}
       </RRComponent>
     </RR.ARNode>
   );
 };
-
 makeBasicARGeom = RRComponent => {
   return makeARGeom(RRComponent, props => {
     if (props.shape) {
@@ -22,42 +34,163 @@ makeBasicARGeom = RRComponent => {
     }
   });
 };
-
-ARBox = makeBasicARGeom(RR.ARBox);
-ARCapsule = makeBasicARGeom(RR.ARCapsule);
-ARCone = makeBasicARGeom(RR.ARCone);
-ARCylinder = makeBasicARGeom(RR.ARCylinder);
-ARPlane = makeBasicARGeom(RR.ARPlane);
-ARPyramid = makeBasicARGeom(RR.ARPyramid);
-ARSphere = makeBasicARGeom(RR.ARSphere);
-ARTorus = makeBasicARGeom(RR.ARTorus);
-ARTube = makeBasicARGeom(RR.ARTube);
-ARShape = makeBasicARGeom(RR.ARShape);
-ARText = makeARGeom(RR.ARText, props => {
+const ARBox = makeBasicARGeom(RR.ARBox);
+const ARCapsule = makeBasicARGeom(RR.ARCapsule);
+const ARCone = makeBasicARGeom(RR.ARCone);
+const ARCylinder = makeBasicARGeom(RR.ARCylinder);
+const ARPlane = makeBasicARGeom(RR.ARPlane);
+const ARPyramid = makeBasicARGeom(RR.ARPyramid);
+const ARSphere = makeBasicARGeom(RR.ARSphere);
+const ARTorus = makeBasicARGeom(RR.ARTorus);
+const ARTube = makeBasicARGeom(RR.ARTube);
+const ARShape = makeBasicARGeom(RR.ARShape);
+const ARText = makeARGeom(RR.ARText, props => {
   if (props.font) {
     return { ...props.font, fontName: props.font.name };
   }
 });
+const ARLight = makeARGeom(RR.ARLight);
+//Note that alpha prop is ignored in ARModel because it is seemingly not called in the native code
+const ARModel = makeARGeom(RR.ARShape, props => {
+  if (props.model)
+    return {
+      path: props.model.file,
+      parentNode: props.model.node,
+      scale: props.model.scale
+    };
+});
+//No-opping ARGroup because it doesn't appear to do anything
+const ARGroup = props => {
+  return null;
+};
+
+const ARKit = props => {
+  return (
+    <RR.ARSessionProvider alignment={getGravity(props.worldAlignment)}>
+      <RR.ARMonoView {...props}>
+        <RR.ARTrackingProvider
+          {...props}
+          imageDetection={!!props.imageDetection}
+          images={props.imageDetection}
+          onUpdateAnchors={anchors => {
+            if (props.onPlaneDetected) props.onPlaneDetected(anchors);
+            if (props.onPlaneUpdate) props.onPlaneUpdate(anchors);
+            if (props.onPlaneUpdated) props.onPlaneUpdated(anchors);
+            if (props.onPlaneRemoved) props.onPlaneRemoved(anchors);
+            if (props.onAnchorDetected) props.onAnchorDetected(anchors);
+            if (props.onAnchorUpdated) props.onAnchorUpdated(anchors);
+            if (props.onAnchorRemoved) props.onAnchorRemoved(anchors);
+          }}
+        >
+          <RR.ARPositionProvider
+            onPositionChange={({ position, orientation }) => {
+              DeviceMotionCB && cb({ position, orientation });
+            }}
+          >
+            {props.children}
+          </RR.ARPositionProvider>
+        </RR.ARTrackingProvider>
+      </RR.ARMonoView>
+    </RR.ARSessionProvider>
+  );
+};
+var DeviceMotionCB = null;
+const DeviceMotion = {
+  start: cb => {
+    DeviceMotionCB = cb;
+  },
+  stop: () => {
+    DeviceMotionCB = null;
+  }
+};
+const getGravity = WAEnum => {
+  switch (WAEnum) {
+    case 0:
+      return "gravity";
+    case 1:
+      return "compass";
+    case 2:
+      return "camera";
+    default:
+      return "gravity";
+  }
+};
+
+ARKit.PlaneDetection = {
+  Horizontal: "horizontal",
+  Vertical: "vertical",
+  Both: "both",
+  None: null
+};
+
+const colorUtils = {
+  colorTemperatureToRgb: temperature => {
+    const m = global.Math;
+    const temp = temperature / 100;
+    let r;
+    let g;
+    let b;
+
+    if (temp <= 66) {
+      r = 255;
+      g = m.min(m.max(99.4708025861 * m.log(temp) - 161.1195681661, 0), 255);
+    } else {
+      r = m.min(m.max(329.698727446 * m.pow(temp - 60, -0.1332047592), 0), 255);
+      g = m.min(
+        m.max(288.1221695283 * m.pow(temp - 60, -0.0755148492), 0),
+        255
+      );
+    }
+
+    if (temp >= 66) {
+      b = 255;
+    } else if (temp <= 19) {
+      b = 0;
+    } else {
+      b = temp - 10;
+      b = m.min(m.max(138.5177312231 * m.log(b) - 305.0447927307, 0), 255);
+    }
+
+    return {
+      r,
+      g,
+      b
+    };
+  },
+  whiteBalanceWithTemperature: ({ r, g, b }, temperature) => {
+    const temperatureRgb = colorTemperatureToRgb(temperature);
+    return {
+      r: (r * 255) / temperatureRgb.r,
+      g: (g * 255) / temperatureRgb.g,
+      b: (b * 255) / temperatureRgb.b
+    };
+  }
+};
 
 /** /
  * TODO
  *
- * Non-basic shapes:
- * ARGroup
- * ARLight
- * ARModel
+ * Views:
  * ARSprite
  *
- * Non-shape component:
- * ARKit
- *
  * Libraries:
- * DeviceMotion
  * withProjectedPosition
- * colorUtils
  *
  */
 
+ARKit.ARBox = ARBox;
+ARKit.ARCapsule = ARCapsule;
+ARKit.ARCylinder = ARCylinder;
+ARKit.ARPlane = ARPlane;
+ARKit.ARPyramid = ARPyramid;
+ARKit.ARSphere = ARSphere;
+ARKit.ARTorus = ARTorus;
+ARKit.ARTube = ARTube;
+ARKit.ARShape = ARShape;
+ARKit.ARText = ARText;
+ARKit.ARLight = ARLight;
+ARKit.ARModel = ARModel;
+ARKit.ARGroup = ARGroup;
 export {
   ARBox,
   ARCapsule,
@@ -69,7 +202,11 @@ export {
   ARTorus,
   ARTube,
   ARText,
-  ARShape
+  ARShape,
+  ARLight,
+  ARModel,
+  ARGroup,
+  DeviceMotion,
+  colorUtils,
+  ARKit
 };
-
-export default ARKit;
