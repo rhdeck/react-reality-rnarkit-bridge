@@ -1,0 +1,27 @@
+{
+  "name": "react-reality-rnarkit-bridge",
+  "version": "1.0.0",
+  "description": "Bridge to support react-native-arkit functionality from react-reality",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/github.com/react-reality-rnarkit-bridge.git"
+  },
+  "keywords": [
+    "react-native",
+    "arkit"
+  ],
+  "author": "Ray Deck",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/github.com/react-reality-rnarkit-bridge/issues"
+  },
+  "homepage": "https://github.com/github.com/react-reality-rnarkit-bridge#readme",
+  "dependencies": {},
+  "peerDependencies": {
+    "react-reality": "rhdeck/react-reality"
+  }
+}
