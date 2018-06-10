@@ -1,14 +1,16 @@
 import * as RR from "react-reality";
-const ARKit = {};
+import React from "react";
+import * as RRpropTypes from "react-reality/components/propTypes";
 makeARGeom = (RRComponent, filterProps) => props => {
   const shapeProps = filterProps && filterProps(props);
+  console.log("I am making a box with component", RRComponent);
   return (
     <RR.ARNode {...props}>
       <RRComponent {...props} {...shapeProps}>
         {props.materials &&
           props.materials.map((obj, index) => {
             return (
-              <RR.ARMaterial {...obj} index={index}>
+              <RR.ARMaterial {...obj} key={index} index={index}>
                 {["diffuse", "displacement", "specular", "normal"].map(id => {
                   if (obj[id]) {
                     return (
@@ -64,7 +66,7 @@ const ARGroup = props => {
   return null;
 };
 
-const ARKit = props => {
+var ARKit = props => {
   return (
     <RR.ARSessionProvider alignment={getGravity(props.worldAlignment)}>
       <RR.ARMonoView {...props}>
@@ -116,7 +118,7 @@ const getGravity = WAEnum => {
   }
 };
 
-ARKit.PlaneDetection = {
+ARKit.ARPlaneDetection = {
   Horizontal: "horizontal",
   Vertical: "vertical",
   Both: "both",
@@ -178,19 +180,22 @@ const colorUtils = {
  *
  */
 
-ARKit.ARBox = ARBox;
-ARKit.ARCapsule = ARCapsule;
-ARKit.ARCylinder = ARCylinder;
-ARKit.ARPlane = ARPlane;
-ARKit.ARPyramid = ARPyramid;
-ARKit.ARSphere = ARSphere;
-ARKit.ARTorus = ARTorus;
-ARKit.ARTube = ARTube;
-ARKit.ARShape = ARShape;
-ARKit.ARText = ARText;
-ARKit.ARLight = ARLight;
-ARKit.ARModel = ARModel;
-ARKit.ARGroup = ARGroup;
+ARKit.Box = ARBox;
+ARKit.Capsule = ARCapsule;
+ARKit.Cylinder = ARCylinder;
+ARKit.Cone = ARCone;
+ARKit.Plane = ARPlane;
+ARKit.Pyramid = ARPyramid;
+ARKit.Sphere = ARSphere;
+ARKit.Torus = ARTorus;
+ARKit.Tube = ARTube;
+ARKit.Shape = ARShape;
+ARKit.Text = ARText;
+ARKit.Light = ARLight;
+ARKit.Model = ARModel;
+ARKit.Group = ARGroup;
+ARKit.Light = ARLight;
+ARKit.LightType = RRpropTypes.lightType;
 export {
   ARBox,
   ARCapsule,
@@ -210,3 +215,4 @@ export {
   colorUtils,
   ARKit
 };
+console.log("ARKit is", ARKit, ARKit.Box);

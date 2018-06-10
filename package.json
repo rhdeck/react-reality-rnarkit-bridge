@@ -20,8 +20,8 @@
     "url": "https://github.com/github.com/react-reality-rnarkit-bridge/issues"
   },
   "homepage": "https://github.com/github.com/react-reality-rnarkit-bridge#readme",
-  "dependencies": {},
   "peerDependencies": {
+    "react": "^16.4.0",
     "react-reality": "rhdeck/react-reality"
   }
 }
