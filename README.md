@@ -13,7 +13,7 @@ Shortest path to POC at this time:
 ```bash
 react-native init bridgetest
 yarn add \
-    rhdeck/react-reality
+    rhdeck/react-reality \
     rhdeck/react-reality-rnarkit-bridge \
     react-native-swift \
     react-native-pod \
