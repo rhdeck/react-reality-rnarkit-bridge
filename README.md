@@ -6,23 +6,15 @@ Bindings to support the [react-native-arkit](https://github.com/react-native-ar/
 
 `react-native-arkit` is a popular React-Native extension for augmented reality. This bridge is intended as a "backport" to allow those who are familiar with that API but who want to leverage the extensions and flexibility of `react-reality` to more easily leverage their code.
 
-# Installation
+# 30 second Installation - now quicker with react-reality-cli!
 
 Shortest path to POC at this time (where you can replace bridgetest with your preferred test app name):
 
 ```bash
-react-native init bridgetest
+yarn global add rhdeck/react-reality-cli
+rr init bridgetest
 cd bridgetest
-yarn add \
-    rhdeck/react-reality \
-    rhdeck/react-reality-rnarkit-bridge \
-    react-native-swift \
-    react-native-pod \
-    react-native-fix-ios-version \
-    react-native-camera-ios-enable \
-    react-native-setdevteam
-react-native link
-react-native setdevteam
+yarn add rhdeck/react-reality-rnarkit-bridge
 react-native run-ios --device
 ```
 
