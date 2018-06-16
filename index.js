@@ -61,10 +61,8 @@ const ARModel = makeARGeom(RR.ARShape, props => {
       scale: props.model.scale
     };
 });
-//No-opping ARGroup because it doesn't appear to do anything
-const ARGroup = props => {
-  return null;
-};
+//Looks like ARGroup is just a node without special features
+const ARGroup = props => <RR.ARNode {...props} />;
 
 var ARKit = props => {
   return (
