@@ -167,11 +167,15 @@ const colorUtils = {
   }
 };
 
+const ARSprite = props => {
+  return (
+    <RR.ARNode {...props}>
+      <RR.ARProjectedView>{this.props.children}</RR.ARProjectedView>
+    </RR.ARNode>
+  );
+};
 /** /
  * TODO
- *
- * Views:
- * ARSprite
  *
  * Libraries:
  * withProjectedPosition
@@ -194,6 +198,7 @@ ARKit.Model = ARModel;
 ARKit.Group = ARGroup;
 ARKit.Light = ARLight;
 ARKit.LightType = RRpropTypes.lightType;
+ARKit.ARSprite = ARSprite;
 export {
   ARBox,
   ARCapsule,
@@ -211,5 +216,7 @@ export {
   ARGroup,
   DeviceMotion,
   colorUtils,
-  ARKit
+  ARKit,
+  ARSprite
 };
+export default ARKit;
