@@ -150,6 +150,10 @@ export default class ReactNativeARKit extends Component {
 }
 ```
 
+# What's Missing
+
+- `withProjectedPosition` not yet implemented - and it seems really cool!
+
 # Credit-Where-Credit-Is-Due
 
 The `react-reality` project was inspired by the `react-native-arkit` project.
